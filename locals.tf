@@ -19,5 +19,6 @@ locals {
         },
         var.igw_tags
     )
+    az_names = slice(aws_availability_zones.available.names,0,2)  # this gives us-east-1a,1b
 
 }
