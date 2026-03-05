@@ -69,11 +69,6 @@ resource "aws_subnet" "public" {
   resource "aws_route_table" "public" {
         vpc_id = aws_vpc.main.id
 
-        route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.main.id
-        }
-
         tags = merge (
                 local.common_tags ,
                 { # roboshop-dev-public
@@ -86,11 +81,6 @@ resource "aws_subnet" "public" {
     # private route table
   resource "aws_route_table" "private" {
         vpc_id = aws_vpc.main.id
-
-        route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.main.id
-        }
 
         tags = merge (
                 local.common_tags ,
@@ -105,11 +95,6 @@ resource "aws_subnet" "public" {
   resource "aws_route_table" "database" {
         vpc_id = aws_vpc.main.id
 
-        route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.main.id
-        }
-
         tags = merge (
                 local.common_tags ,
                 { # roboshop-dev-database
@@ -119,7 +104,7 @@ resource "aws_subnet" "public" {
             )
     }  
 
-    # route table association public thru IGW (0.0.0.0/0) 
+    #5.1  route table association public thru IGW (0.0.0.0/0) 
 
     resource "aws_route" "public" {
         route_table_id            = aws_route_table.public.id
@@ -127,10 +112,10 @@ resource "aws_subnet" "public" {
         gateway_id = aws_internet_gateway.main.id
    }
 
-   # create NAT. for that we need to create first Elastic IP ( static)
+   #6. create NAT. for that we need to create first Elastic IP ( static)
 
    resource "aws_eip" "nat" {
-        domain                    = "vpc"   
+        domain         = "vpc"   
         tags = merge (
                 local.common_tags ,
                 { # roboshop-dev-nat
@@ -155,7 +140,7 @@ resource "aws_subnet" "public" {
         depends_on = [aws_internet_gateway.main]
     }
 
-    # route table association private/database thru NAT (0.0.0.0/0) 
+    # 5.2 route table association private/database thru NAT (0.0.0.0/0) 
 
     resource "aws_route" "private" {
         route_table_id            = aws_route_table.private.id
